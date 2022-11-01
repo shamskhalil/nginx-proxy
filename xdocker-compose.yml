@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  proxy:
+    image: nginx:alpine
+    ports:
+      - 80:80
+    networks:
+      - frontnet
+    volumes:
+      - /Users/shamskhalil/Desktop/nginx/proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+
+  nsite:
+    image: nginx:alpine
+    volumes:
+      - /Users/shamskhalil/Desktop/nginx/nsite/www:/usr/share/nginx/html
+    networks:
+      - frontnet
+
+  app:
+    build: app/
+    networks:
+      - frontnet
+
+networks:
+  frontnet:
+
+
