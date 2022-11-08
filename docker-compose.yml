@@ -1,0 +1,67 @@
+version: '3.7'
+
+services:
+  app1:
+    image: node-balance:0.0.1
+    restart: always
+    labels:
+      - traefik.frontend.rule=Host:app1.localhost
+      - traefik.enable=true
+      - traefik.port=3000
+      - traefik.docker.network=nginx-proxy_frontnet
+    networks:
+      - frontnet
+
+  app2:
+    image: node-balance:0.0.1
+    restart: always
+    labels:
+      - traefik.frontend.rule=Host:localhost;PathStrip:/app2
+      - traefik.enable=true
+      - traefik.port=3000
+      - traefik.docker.network=nginx-proxy_frontnet
+    networks:
+      - frontnet
+
+  app3:
+    image: node-balance:0.0.1
+    restart: always
+    labels:
+      - traefik.frontend.rule=Host:app3.localhost
+      - traefik.enable=true
+      - traefik.port=3000
+      - traefik.docker.network=nginx-proxy_frontnet
+    networks:
+      - frontnet
+
+  app4:
+    image: node-balance:0.0.1
+    restart: always
+    labels:
+      - traefik.frontend.rule=Host:app3.localhost;PathStrip:/app4
+      - traefik.enable=true
+      - traefik.port=3000
+      - traefik.docker.network=nginx-proxy_frontnet
+    networks:
+      - frontnet
+
+  traefik:
+    image: traefik:1.7.6-alpine
+    restart: always
+    command: --docker
+    labels:
+      - traefik.frontend.rule=Host:localhost
+      - traefik.enable=true
+      - traefik.port=8080
+      - traefik.docker.network=nginx-proxy_frontnet
+      #- traefik.frontend.auth.basic.users:shamskhalil:$$apr1$$cqXqlUS7$$CiSTm2T3B6GWOq/bFcKJ71
+    volumes:
+      - $PWD/traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+    networks:
+      - frontnet
+
+networks:
+  frontnet:
